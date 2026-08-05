@@ -79,6 +79,9 @@ const string& Player::getName() const {
 const Hand& Player::getHand() const {
     return hand;
 }
+Hand& Player::getHand() {
+    return hand;
+}
 
 bool Player::isBusted() const {
     return busted;

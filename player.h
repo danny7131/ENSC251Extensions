@@ -21,6 +21,7 @@ class Player{
 
     const std::string& getName() const;
     const Hand& getHand() const;
+    Hand& getHand();
 
     bool isBusted() const;
 

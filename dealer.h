@@ -16,7 +16,7 @@ class Dealer {
     void resetForRound();
     void displayHand() const;
     void revealHiddenCard();
-    
+
     Hand& getHand();
     const Hand& getHand() const;
     bool isSecondCardHidden() const;
@@ -25,4 +25,4 @@ class Dealer {
 
 
 
-#endif DEALER_H
+#endif
