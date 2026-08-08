@@ -8,11 +8,11 @@ using namespace std;
 
 Game::Game() {}
 
-// Start and play again loop
+//start and play again loop
 void Game::run() {
     cout << "Welcome to Blackjack!\n\n";
     
-    // Setup players and prepare the deck before starting the main game loop
+    //setup players and prepare the deck before starting the main game loop
     setupPlayers();
     prepareDeck();
 
@@ -20,14 +20,14 @@ void Game::run() {
     while (keepPlaying && !players.empty()) {
         resetRound();
         
-        takeBets(); // --- NEW: Ask for bets before dealing ---
+        takeBets(); //ask for bets before dealing
         
         dealInitialCards();
         displayOpeningHands();
         startRound();
         displayResults();
         
-        removeBankruptPlayers(); // --- NEW: Kick out players with $0 ---
+        removeBankruptPlayers(); //kick out players with $0
         
         if (!players.empty()) {
             keepPlaying = askPlayAgain();
@@ -38,13 +38,13 @@ void Game::run() {
     }
 }
 
-// Get players info
+//get players info
 void Game::setupPlayers() {
     int numPlayers = 0;
     
     cout << "Enter the number of players: ";
     
-    // Validate input
+    //validate input
     while (!(cin >> numPlayers) || numPlayers < 1) {
         cout << "Please enter a valid number of players (1 or more): ";
         cin.clear();
@@ -53,7 +53,7 @@ void Game::setupPlayers() {
 
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
-    // Get player names
+    //get player names
     for (int i = 0; i < numPlayers; i++) {
         string playerName;
         bool duplicateFound;
@@ -63,12 +63,12 @@ void Game::setupPlayers() {
             cout << "Enter name for Player " << (i + 1) << ": ";
             getline(cin, playerName);
             
-            // Assign a default name if input is empty
+            //assign a default name if input is empty
             if (playerName.empty()) {
                 playerName = "Player " + to_string(i + 1);
             }
             
-            // Check for duplicates
+            //check for duplicates
             for (const Player& existingPlayer: players) {
                 if (existingPlayer.getName() == playerName) {
                     cout << "Error: That name is already taken. Please choose a different name.\n";
@@ -78,12 +78,12 @@ void Game::setupPlayers() {
             } 
         } while (duplicateFound);
 
-        // Create and add player to the vector (defaults to $1000 bankroll per player.h)
+        //create and add player to the vector (defaults to $1000 bankroll per player.h)
         players.push_back(Player(playerName));
     }
 }
 
-// Betting Phase
+//betting Phase
 void Game::takeBets() {
     cout << "\n--- Betting Phase ---\n";
     for (Player& player : players) {
@@ -103,13 +103,13 @@ void Game::takeBets() {
             }
         }
     }
-    // Clear buffer in case of extra characters so the game doesn't skip inputs later
+    //clear buffer in case of extra characters so the game doesn't skip inputs later
     cin.ignore(numeric_limits<streamsize>::max(), '\n'); 
 }
 
-// Round start
+//round start
 void Game::startRound() {
-    // Each player takes their turn
+    //each player takes their turn
     for (Player& player : players) {
         if (deck.cardsRemaining() == 0) {
             cout << "Deck is empty. Reshuffling...\n";
@@ -118,7 +118,7 @@ void Game::startRound() {
         player.takeTurn(deck);
     }
 
-    // Dealer takes turn if at least one player hasn't busted
+    //dealer takes turn if at least one player hasn't busted
     if (!allPlayersBusted()) {
         dealer.takeTurn(deck);
     } else {
@@ -126,9 +126,9 @@ void Game::startRound() {
     }
 }
 
-// Reset round
+//reset round
 void Game::resetRound() {
-    // Dynamic threshold: ensure enough cards for 2 per person + some hits
+    //dynamic threshold: ensure enough cards for 2 per person + some hits
     int safeThreshold = (players.size() + 1) * 5; 
     
     if (deck.cardsRemaining() < safeThreshold) {
@@ -136,20 +136,20 @@ void Game::resetRound() {
         prepareDeck();
     }
 
-    // Reset each player's hand and busted status
+    //reset each player's hand and busted status
     for (Player& player : players) {
         player.resetForRound();
     }
     dealer.resetForRound();
 }
 
-// Check before starting a round
+//check before starting a round
 void Game::prepareDeck() {
     deck.initialize();
     deck.shuffle();
 }
 
-// Deal two cards to each player and the dealer
+//deal two cards to each player and the dealer
 void Game::dealInitialCards() {
     for (int i = 0; i < 2; i++) {
         for (Player& player : players) {
@@ -159,7 +159,7 @@ void Game::dealInitialCards() {
     }
 }
 
-// Display the dealer's hand and each player's hand
+//display the dealer's hand and each player's hand
 void Game::displayOpeningHands() const {
     cout << "\n--- Opening Hands ---\n\n";
     dealer.displayHand(); 
@@ -169,7 +169,7 @@ void Game::displayOpeningHands() const {
     }
 }
 
-// Display a specific player's hand
+//display a specific player's hand
 void Game::displayPlayerHand(const Player& player) const {
     cout << player.getName() << "'s hand:\n";
 
@@ -181,7 +181,7 @@ void Game::displayPlayerHand(const Player& player) const {
     cout << "Total: " << player.getHand().calculateTotal() << "\n\n";
 }
 
-// Check if all players have busted
+//check if all players have busted
 bool Game::allPlayersBusted() const {
     for (const Player& player : players) {
         if (!player.isBusted()) {
@@ -191,7 +191,7 @@ bool Game::allPlayersBusted() const {
     return true;
 }
 
-// Handles payouts ('const' is removed from the signature)
+//handles payouts ('const' is removed from the signature)
 void Game::displayResults() {
     cout << "\n--- Round Results ---\n";
 
@@ -204,7 +204,7 @@ void Game::displayResults() {
 
         cout << player.getName() << ": ";
         
-        // Determine win/loss status and award money
+        //determine win/loss status and award money
         if (player.isBusted()) {
             player.loseBet();
             cout << "Busted, loses $" << betAmount << ". ";
@@ -226,14 +226,14 @@ void Game::displayResults() {
             cout << "Loses with " << playerTotal << " against dealer's " << dealerTotal << ". Loses $" << betAmount << ". ";
         }
         
-        // Show current bankroll after payouts
+        //show current bankroll after payouts
         cout << "(Bankroll: $" << player.getBankroll() << ")\n";
     }
 }
 
-// Remove players who hit $0
+//remove players who hit $0
 void Game::removeBankruptPlayers() {
-    // Iterate backwards so erasing an element doesn't shift the indexes of remaining elements
+    //iterate backwards so erasing an element doesn't shift the indexes of remaining elements
     for (int i = players.size() - 1; i >= 0; i--) {
         if (players[i].isBankrupt()) {
             cout << "\n" << players[i].getName() << " is out of money and has been removed from the game!\n";
@@ -242,7 +242,7 @@ void Game::removeBankruptPlayers() {
     }
 }
 
-// Ask the user if they want to play another round
+//ask the user if they want to play another round
 bool Game::askPlayAgain() const {
     string response;
 

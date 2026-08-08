@@ -88,7 +88,7 @@ bool Player::isBusted() const {
     return busted;
 }
 
-// Betting Methods
+//betting Methods
 
 int Player::getBankroll() const {
     return bankroll;
@@ -100,20 +100,20 @@ int Player::getCurrentBet() const {
 
 void Player::placeBet(int amount) {
     currentBet = amount;
-    bankroll -= amount; // Deduct bet from bankroll immediately
+    bankroll -= amount; //deduct bet from bankroll immediately
 }
 
 void Player::winBet() {
-    bankroll += (currentBet * 2); // Return original bet + winnings (1:1 payout)
+    bankroll += (currentBet * 2); //return original bet + winnings (1:1 payout)
     currentBet = 0;
 }
 
 void Player::loseBet() {
-    currentBet = 0; // Bet was already deducted during placeBet()
+    currentBet = 0; //bet was already deducted during placeBet()
 }
 
 void Player::pushBet() {
-    bankroll += currentBet; // Return the bet to the bankroll
+    bankroll += currentBet; //return the bet to the bankroll
     currentBet = 0;
 }
 

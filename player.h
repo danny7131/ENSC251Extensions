@@ -10,7 +10,7 @@ class Player{
     Hand hand;
     bool busted;
 
-    //Betting variables
+    //betting variables
     int bankroll;
     int currentBet;
 
@@ -30,7 +30,7 @@ class Player{
 
     bool isBusted() const;
 
-    //Betting methods
+    //betting methods
     int getBankroll() const;
     int getCurrentBet() const;
     void placeBet(int amount);
