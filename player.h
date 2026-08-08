@@ -10,10 +10,15 @@ class Player{
     Hand hand;
     bool busted;
 
+    //Betting variables
+    int bankroll;
+    int currentBet;
+
     void displayHand() const;
 
     public:
-    Player(const std::string& playerName);
+    //starting bankroll with a default of 1000
+    Player(const std::string& playerName, int startingBankroll = 1000);
     ~Player() = default;
 
     void takeTurn(Deck& deck);
@@ -25,7 +30,15 @@ class Player{
 
     bool isBusted() const;
 
-};
+    //Betting methods
+    int getBankroll() const;
+    int getCurrentBet() const;
+    void placeBet(int amount);
+    void winBet();
+    void loseBet();
+    void pushBet();
+    bool isBankrupt() const;
 
+};
 
 #endif

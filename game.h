@@ -17,9 +17,15 @@ private: //users no need to know
     void prepareDeck();
     void dealInitialCards();
 
+    // Betting related methods
+    void takeBets();
+    void removeBankruptPlayers();
+
     void displayOpeningHands() const;
     void displayPlayerHand(const Player& player) const;
-    void displayResults() const;
+    
+    // Removed 'const' so we can modify player bankrolls
+    void displayResults(); 
 
     bool allPlayersBusted() const;
     bool askPlayAgain() const;
