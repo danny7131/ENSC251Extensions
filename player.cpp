@@ -5,8 +5,12 @@
 using namespace std;
 
 //starting Bankroll and initial betting variables
-Player::Player(const string& playerName, int startingBankroll) //player initialize
-    : name(playerName), busted(false), bankroll(startingBankroll), currentBet(0) {
+Player::Player(const string& playerName)
+    : name(playerName), busted(false) {
+
+    //starting chips: 5 black ($500), 10 green ($250), 40 red ($200), 50 white ($50)
+    inventory = {5, 10, 40, 50};
+    currentBet = {0, 0, 0, 0};
 }
 
 void Player::displayHand() const { //show first hands
@@ -88,6 +92,87 @@ bool Player::isBusted() const {
     return busted;
 }
 
+//chip logic
+int Player::getInventoryValue() const {
+    return inventory.getTotalValue();
+}
+
+int Player::getCurrentBetValue() const {
+    return currentBet.getTotalValue();
+}
+
+const ChipSet& Player::getInventory() const {
+    return inventory;
+}
+
+bool Player::placeBet(int b, int g, int r, int w) {
+    //check if player actually has enough of each specific chip
+    if (b > inventory.black || g > inventory.green || r > inventory.red || w > inventory.white) {
+        return false;
+    }
+    //prevent $0 bets
+    if (b==0 && g==0 && r==0 && w==0) {
+        return false;
+    }
+    //deduct chips from inventory
+    inventory.black -= b;
+    inventory.green -= g;
+    inventory.red -= r;
+    inventory.white -=w;
+    //put them on the table
+    currentBet = {b, g, r, w};
+    return true;
+}
+
+void Player::addChipsFromValue(int value) {
+    //greedy algorithm: dealer makes change using the largest chips possible
+    int remaining = value;
+
+    inventory.black += remaining/100;
+    remaining %= 100;
+
+    inventory.green += remaining/25;
+    remaining %= 25;
+
+    inventory.red += remaining/5;
+    remaining %= 5;
+
+    inventory.white += remaining;
+}
+
+void Player::winBet() {
+    //return the original chips the player bet
+    inventory.black += currentBet.black;
+    inventory.green += currentBet.green;
+    inventory.red += currentBet.red;
+    inventory.white += currentBet.white;
+
+    //pay out the winnings in efficient chips
+    addChipsFromValue(currentBet.getTotalValue());
+
+    currentBet = {0, 0, 0, 0};
+}
+
+void Player::loseBet() {
+    //dealer takes the chips. just resets the table bet
+    currentBet = {0, 0, 0, 0};
+}
+
+void Player::pushBet() {
+    //tie: give the exact chips back to the player
+    inventory.black += currentBet.black;
+    inventory.green += currentBet.green;
+    inventory.red += currentBet.red;
+    inventory.white += currentBet.white;
+
+    currentBet = {0, 0, 0, 0};
+}
+
+bool Player::isBankrupt() const {
+    return getInventoryValue() == 0;
+}
+
+/*
 //betting Methods
 
 int Player::getBankroll() const {
@@ -120,3 +205,4 @@ void Player::pushBet() {
 bool Player::isBankrupt() const {
     return bankroll <= 0;
 }
+*/

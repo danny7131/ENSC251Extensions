@@ -83,6 +83,7 @@ void Game::setupPlayers() {
     }
 }
 
+/*
 //betting Phase
 void Game::takeBets() {
     cout << "\n--- Betting Phase ---\n";
@@ -105,6 +106,53 @@ void Game::takeBets() {
     }
     //clear buffer in case of extra characters so the game doesn't skip inputs later
     cin.ignore(numeric_limits<streamsize>::max(), '\n'); 
+}
+*/
+
+//ask for specific chip denominations
+void Game::takeBets() {
+    cout << "\n--- Betting Phase ---\n";
+    for (Player& player : players) {
+        bool validBet = false;
+
+        while (!validBet) {
+            const ChipSet& inv = player.getInventory();
+            cout << player.getName() << "'s turn to bet.\n";
+            cout << "Your Chip Inventory:\n"
+                 << " [Black($100)]  : " << inv.black << "\n"
+                 << " [Green($25)]   : " << inv.green << "\n"
+                 << " [Red ($5)]     : " << inv.red << "\n"
+                 << " [White ($1)]   : " << inv.white << "\n"
+                 << "Total Bankroll  : $" << player.getInventoryValue() << "\n\n";
+
+            int b = 0, g = 0, r = 0, w = 0;
+            cout << "How many Black chips ($100) to bet? : ";
+            cin >> b;
+            cout << "How many Green chips ($25) to bet? : ";
+            cin >> g;
+            cout << "How many Red chips ($5) to bet?  : ";
+            cin >> r;
+            cout << "How many White chips ($1) to bet?  : ";
+            cin >> w;
+
+            //validate that inputs are numbers and aren't negative
+            if (cin.fail() || b < 0 || g < 0 || r < 0 || w < 0) {
+                 cout << "\nInvalid input. Please enter zero or positive numbers only.\n\n";
+                 cin.clear();
+                 cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                 continue;
+            }
+
+            //try to place the bet. Fails if they bet $0 or don't have the chips.
+            if (player.placeBet(b, g, r, w)) {
+                cout << "\n> " << player.getName() << " placed a bet of $" << player.getCurrentBetValue() << ".\n\n";
+                validBet = true;
+            } else {
+                cout << "\n*** Invalid bet! You either don't have enough of those specific chips, or you tried to bet $0. ***\n\n";
+            }
+        }
+    }
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
 }
 
 //round start
@@ -191,7 +239,7 @@ bool Game::allPlayersBusted() const {
     return true;
 }
 
-//handles payouts ('const' is removed from the signature)
+//payouts reading chip value
 void Game::displayResults() {
     cout << "\n--- Round Results ---\n";
 
@@ -200,7 +248,7 @@ void Game::displayResults() {
 
     for (Player& player : players) {
         int playerTotal = player.getHand().calculateTotal();
-        int betAmount = player.getCurrentBet();
+        int betAmount = player.getCurrentBetValue();
 
         cout << player.getName() << ": ";
         
@@ -226,8 +274,8 @@ void Game::displayResults() {
             cout << "Loses with " << playerTotal << " against dealer's " << dealerTotal << ". Loses $" << betAmount << ". ";
         }
         
-        //show current bankroll after payouts
-        cout << "(Bankroll: $" << player.getBankroll() << ")\n";
+        //show current total value after payouts
+        cout << "(Total Value: $" << player.getInventoryValue() << ")\n";
     }
 }
 
